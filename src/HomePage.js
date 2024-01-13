@@ -1,17 +1,14 @@
-import { Link } from "react-router-dom";
+import React from "react";
 
-function HomePage() {
+export default function Home(props) {
     return (
-      <div>
-        <h1>This is the home page</h1>
-        
-      </div>
-    );
-  }
-  
-  export default HomePage;
+        <>
+        <div>
+            <h1>
+                This is going to be the home page.
+            </h1>
+        </div>
+        </>
+    )
+}
 
-  /* 
-  <Link to="BookingPage">Click to view our booking page</Link>
-        <Link to="CalendarPage">Click to view our calendar page</Link>
-  */
