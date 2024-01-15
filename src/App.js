@@ -3,7 +3,6 @@ import './App.css';
 import { Link , Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import Home from './components/Home';
-import { Register } from './components/Register';
 
 const App = () =>{
   return (
@@ -21,6 +20,7 @@ const App = () =>{
       </div>
     </div>
   </header>
+  
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path="/login" element={<Login />}/>
