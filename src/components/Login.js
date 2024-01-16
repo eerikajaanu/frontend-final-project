@@ -1,208 +1,106 @@
-import React, { useState , useEffect} from 'react';
+import { useState, useEffect } from "react";
 
 function Login() {
-  const [token, setToken] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-
-  const handleLogin = async (email, password) => {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
-    try {
+    const [token, setToken] = useState(null);
+    const [userType, setUserType] = useState(null); // Added to track user type (doctor or pet owner)
+  
+    // Function to handle login
+    async function handleLogin(email, password) {
       const response = await fetch("http://localhost:4000/login", {
         method: "POST",
-        body: formData
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       });
-
-      console.log('Login Response:', response);
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        console.error("Login failed:", errorMessage);
-        return;
-      }
-
+  
       const body = await response.json();
-      setToken(body.access_token);
-      return body.access_token;
-      // determineUserRole(body.access_token);
-    } catch (error) {
-      console.error("Error during login:", error);
-    }
-  };
-
-
-  async function fetchTasks(token) {
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    const response = await fetch("http://localhost:4000/login", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + token
+  
+      if (body.token) {
+        setToken(body.token);
+        // Check user type based on the token
+        const decodedToken = parseJWT(body.token);
+        setUserType(decodedToken.role);
       }
-    });
-
-    
-   /* const body = await response.json();
-    setTasks(body);
+    }
+  
+    // Function to handle logout
+    function handleLogout() {
+      setToken(null);
+      setUserType(null);
+    }
+  
+    // Function to parse JWT token and get user role
+    function parseJWT(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  
+      return JSON.parse(jsonPayload);
+    }
+  
+    // Use effect to fetch data when the component renders
+    useEffect(() => {
+      // Fetch data based on user type (doctor or pet owner)
+      if (token && userType) {
+        const fetchEndpoint = userType === 'doctor' ? '/doctor/data' : '/petowner/data'; // Replace with actual API endpoints
+  
+        fetch(`http://localhost:4000${fetchEndpoint}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data); // Handle the data as needed
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      }
+    }, [token, userType]);
+  
+    // UI to show login form, user type-specific UI, and logout button
+    return (
+      <>
+        {!token ? (
+          <div>
+            <h1>Login</h1>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const email = e.target.email.value;
+                const password = e.target.password.value;
+                handleLogin(email, password);
+              }}
+            >
+              <label>Email:</label>
+              <input type="text" name="email" required />
+              <label>Password:</label>
+              <input type="password" name="password" required />
+              <button type="submit">Login</button>
+            </form>
+          </div>
+        ) : (
+          <div>
+            {userType === 'doctor' ? (
+              <h1>Doctor Dashboard</h1>
+            ) : (
+              <h1>Pet Owner Dashboard</h1>
+            )}
+            {/* Display specific content based on user type */}
+            {/* Replace the following placeholder content with your actual UI components */}
+            {userType === 'doctor' ? (
+              <p>Doctor-specific content goes here.</p>
+            ) : (
+              <p>Pet Owner-specific content goes here.</p>
+            )}
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+        )}
+      </>
+    );
   }
-*/
-  // Use effect to only do this once when the component renders
-  useEffect(() => {
-    // First do login
-    handleLogin()
-    .then((token) => fetchTasks(token))
-    .catch((e) => console.error("Something went wrong", e));
-  }, []);
-
-
- /* const determineUserRole = (token) => {
-    const decodedToken = parseJwt(token);
-    if (decodedToken && decodedToken.role) {
-      setCurrentUser(decodedToken.role);
-    }
-  };
-
-  const parseJwt = (token) => {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
-  };*/
-
-  const handleLogout = () => {
-
-    setToken(null);
-    setCurrentUser(null);
-  };
-
-
-  const renderUserUI = () => {
-    if (currentUser === 'doctor') {
-      return <h1>Welcome, Doctor!</h1>;
-    } else if (currentUser === 'pet_owner') {
-      
-      return <h1>Welcome, Pet Owner!</h1>;
-    } else {
-      return (
-        <div>
-          <h1>Login</h1>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const email = e.target.elements.email.value;
-              const password = e.target.elements.password.value;
-              handleLogin(email, password);
-            }}
-          >
-            <label>Email:</label>
-            <input type="text" name="email" required />
-            <br />
-            <label>Password:</label>
-            <input type="password" name="password" required />
-            <br />
-            <button type="submit">Login</button>
-          </form>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div>
-      {renderUserUI()}
-      {token && (
-        <div>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      )}
-    </div>
-  );
-}
-}
-
-export default Login;
- 
-
- /* 
- const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [navigate, setNavigate] = useState(false);
-
-    const submit = async e => {
-        e.preventDefault();
-
-        const {data} = await axios.post('login', {
-            email, password
-        }, {withCredentials: true});
-
-        axios.defaults.headers.common['Authorization'] = `Bearer ${data['token']}`;
-
-        setNavigate(true);
-    }
-
-    if (navigate) {
-        return <Navigate to="/"/>;
-    }
-
-    return <main className="form-signin w-100 m-auto">
-        <form onSubmit={submit}>
-            <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-
-            <div className="form-floating">
-                <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com"
-                       onChange={e => setEmail(e.target.value)}
-                />
-                <label htmlFor="floatingInput">Email address</label>
-            </div>
-
-            <div className="form-floating">
-                <input type="password" className="form-control" id="floatingPassword" placeholder="Password"
-                       onChange={e => setPassword(e.target.value)}
-                />
-                <label htmlFor="floatingPassword">Password</label>
-            </div>
-
-            <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        </form>
-    </main>
-
-
-
-const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post('http://localhost:4000/login', {
-        email,
-        password,
-      });
-
-      const accessToken = response.data.token;
-      onLogin(accessToken); // Pass the token to the parent component
-    } catch (error) {
-      console.error('Login failed', error);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Email:
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-      <label>
-        Password:
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <button type="submit">Login</button>
-    </form>
-  );
-};*/
-
-//hello0
+  
+  export default Login;

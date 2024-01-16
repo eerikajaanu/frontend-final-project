@@ -1,11 +1,11 @@
 import React from "react";
 
-export default function Home(props) {
+export default function Calendar(props) {
     return (
         <>
         <div>
             <h1>
-                This is going to be the home page.
+                This is going to be the calendar page.
             </h1>
         </div>
         </>
