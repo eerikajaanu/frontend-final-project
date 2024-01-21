@@ -1,6 +1,8 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { replace } from "formik";
+import React, { useState, useEffect, Component } from "react";
+import { Navigate } from "react-router-dom";
 
-function Login() {
+const Login = ({ component: Component, authenticated, ...rest}) => {
     const [token, setToken] = useState(null);
     const [userType, setUserType] = useState(null); // Added to track user type (doctor or pet owner)
   
@@ -101,6 +103,12 @@ function Login() {
         )}
       </>
     );
-  }
+   };
   
   export default Login;
+
+  /*
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    return isAuthenticated ? <Component {...rest} /> : <Navigate to='/login' replace />;
+  
+  */
