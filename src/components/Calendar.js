@@ -6,6 +6,7 @@ export default function Calendar(props) {
         <div>
             <h1>
                 This is going to be the calendar page.
+                Protected
             </h1>
         </div>
         </>
