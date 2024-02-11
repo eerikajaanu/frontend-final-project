@@ -11,8 +11,7 @@ const Home = ({ onLogin }) => {
         <h1>
             Welcome to the Pet clinic!
             Public. 
-        </h1>
-        <h2>Please login</h2>       
+        </h1>    
     </div>
     </>
     )
