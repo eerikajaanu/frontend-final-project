@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Component } from "react";
 import { Navigate } from "react-router-dom";
 
-const Login = ({ component: Component, authenticated, ...rest}) => {
+const Login = ({ component: Component, authenticated, ...props}) => {
     async function handleLogin(email, password) {
       const response = await fetch("http://localhost:4000/login", {
         method: "POST",
@@ -13,25 +13,25 @@ const Login = ({ component: Component, authenticated, ...rest}) => {
   
       const body = await response.json();
 
-      console.log(body);
+      
   
       if (body.access_token) {
-        rest.setToken(body.access_token);
+        props.setToken(body.access_token);
         // Check user type based on the token
         const userType = body.id === 0 ? 'doctor' : 'petowner';
-        rest.setUserType(userType);
+        props.setUserType(userType);
       }
     }
   
     // Function to handle logout
     function handleLogout() {
-      rest.setToken(null);
-      rest.setUserType(null);
+      props.setToken(null);
+      props.setUserType(null);
     }
   
     return (
       <>
-        {!rest.token ? (
+        {!props.token ? (
           <div>
             <h1>Login</h1>
             <form

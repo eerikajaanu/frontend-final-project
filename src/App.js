@@ -6,8 +6,6 @@ import Home from './components/Home';
 import Calendar from './components/Calendar';
 import Booking from './components/Booking';
 import Petlist from './components/Petlist';
-import Doctor from './components/Doctor';
-import Petowner from './components/Petowner';
 
 
 function App() {
