@@ -5,6 +5,7 @@ import Login from './Login';
 
 
 const Petlist = (rest) => {
+  const [pets, setPets] = useState([])
     useEffect(() => {
         if (rest.token) {
           fetch(`http://localhost:4000/pets`, {
@@ -15,7 +16,7 @@ const Petlist = (rest) => {
           })
             .then((response) => response.json())
             .then((data) => {
-              console.log(data); 
+              setPets(data); 
             })
             .catch((error) => {
               console.error("Error fetching data:", error);
@@ -25,7 +26,8 @@ const Petlist = (rest) => {
     return (
     <>
     <div>
-           <h2>Pets:</h2>   
+           <h2>Pets:</h2>
+           {pets.map }   
     </div>
     </>
     )
